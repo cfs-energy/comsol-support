@@ -1,0 +1,32 @@
+[
+  {
+    "pattern_name": "HeatTransfer",
+    "stage": "physics",
+    "tier": "B",
+    "description": "Heat transfer in solids physics interface",
+    "java_code": "PhysicsFeature ht = comp.physics().create(\"ht\", \"HeatTransfer\", \"geom1\");\nht.feature(\"solid1\").set(\"k_mat\", \"userdef\");\nht.feature(\"solid1\").set(\"k\", new String[]{\"k_x\", \"k_y\", \"k_z\"});",
+    "corpus_freq": 420,
+    "co_occurrence_json": "{\"SolidMechanics\": 85, \"FluidFlow\": 62, \"TemperatureBoundary\": 310}",
+    "source": "corpus-test"
+  },
+  {
+    "pattern_name": "SolidMechanics",
+    "stage": "physics",
+    "tier": "B",
+    "description": "Solid mechanics physics interface",
+    "java_code": "PhysicsFeature solid = comp.physics().create(\"solid\", \"SolidMechanics\", \"geom1\");\nsolid.feature(\"lemm1\").set(\"E_mat\", \"userdef\");",
+    "corpus_freq": 280,
+    "co_occurrence_json": "{\"HeatTransfer\": 85, \"ThermalExpansion\": 75}",
+    "source": "corpus-test"
+  },
+  {
+    "pattern_name": "FluidFlow",
+    "stage": "physics",
+    "tier": "B",
+    "description": "Laminar flow physics interface",
+    "java_code": "PhysicsFeature spf = comp.physics().create(\"spf\", \"FluidFlow\", \"geom1\");\nspf.feature(\"fp1\").set(\"rho_mat\", \"userdef\");",
+    "corpus_freq": 195,
+    "co_occurrence_json": "{\"HeatTransfer\": 62, \"SolidMechanics\": 30}",
+    "source": "corpus-test"
+  }
+]

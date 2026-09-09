@@ -1,0 +1,52 @@
+[
+  {
+    "pattern_name": "Block",
+    "stage": "geometry",
+    "tier": "B",
+    "description": "Create a rectangular block with size parameters",
+    "java_code": "GeomFeature blk1 = geom.create(\"blk1\", \"Block\");\nblk1.set(\"size\", new double[]{width, height, depth});",
+    "corpus_freq": 312,
+    "co_occurrence_json": "{\"Cylinder\": 145, \"Union\": 89, \"Difference\": 67}",
+    "source": "corpus-test"
+  },
+  {
+    "pattern_name": "Cylinder",
+    "stage": "geometry",
+    "tier": "B",
+    "description": "Create a cylindrical geometry feature",
+    "java_code": "GeomFeature cyl1 = geom.create(\"cyl1\", \"Cylinder\");\ncyl1.set(\"r\", radius);\ncyl1.set(\"h\", height);",
+    "corpus_freq": 245,
+    "co_occurrence_json": "{\"Block\": 145, \"Union\": 102, \"Difference\": 55}",
+    "source": "corpus-test"
+  },
+  {
+    "pattern_name": "Union",
+    "stage": "geometry",
+    "tier": "B",
+    "description": "Boolean union of geometry objects",
+    "java_code": "GeomFeature uni1 = geom.create(\"uni1\", \"Union\");\nuni1.selection(\"input\").set(\"blk1\", \"cyl1\");",
+    "corpus_freq": 198,
+    "co_occurrence_json": "{\"Block\": 89, \"Cylinder\": 102, \"Difference\": 45}",
+    "source": "corpus-test"
+  },
+  {
+    "pattern_name": "Sphere",
+    "stage": "geometry",
+    "tier": "B",
+    "description": "Create a sphere geometry feature",
+    "java_code": "GeomFeature sph1 = geom.create(\"sph1\", \"Sphere\");\nsph1.set(\"r\", radius);",
+    "corpus_freq": 87,
+    "co_occurrence_json": "{\"Block\": 30, \"Cylinder\": 25}",
+    "source": "corpus-test"
+  },
+  {
+    "pattern_name": "Difference",
+    "stage": "geometry",
+    "tier": "B",
+    "description": "Boolean difference (subtract) of geometry objects",
+    "java_code": "GeomFeature dif1 = geom.create(\"dif1\", \"Difference\");\ndif1.selection(\"input\").set(\"blk1\");\ndif1.selection(\"input2\").set(\"cyl1\");",
+    "corpus_freq": 156,
+    "co_occurrence_json": "{\"Block\": 67, \"Cylinder\": 55, \"Union\": 45}",
+    "source": "corpus-test"
+  }
+]

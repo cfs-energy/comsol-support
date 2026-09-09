@@ -1,0 +1,39 @@
+{
+  "$schema": "comsol-support/templates/campaign_state_template.json#v1",
+  "_doc": "Campaign-state schema v1. Read at the start of every cycle by the orchestrator. All fields are required unless marked optional. Append-only campaign-specific fields go under `campaign_specific`.",
+
+  "campaign_id": "<CAMPAIGN_ID>",
+  "started_at": "YYYY-MM-DDTHH:MM:SSZ",
+  "schema_version": 1,
+
+  "current_cycle": 0,
+  "current_phase": "intent | survey | build | run | analyze | wrap",
+  "halt_state": "running | paused | concluded | error",
+  "halt_reason": null,
+
+  "plan_of_record": {
+    "path": "<CAMPAIGN_ID>_plan_of_record.md",
+    "version": 1,
+    "last_modified_cycle": 0
+  },
+
+  "findings_summary": {
+    "register_path": "<CAMPAIGN_ID>_findings_register.md",
+    "open": 0,
+    "source_1": 0,
+    "source_2": 0,
+    "confirmed": 0,
+    "closed": 0,
+    "superseded": 0
+  },
+
+  "artifacts": {
+    "reference_mph": null,
+    "latest_solved_mph": null,
+    "telemetry_db": null,
+    "comments": []
+  },
+
+  "_doc_campaign_specific": "Campaign-specific extension fields go here. Examples: swept parameter range, reference-model checksums, target study tag, custom convergence thresholds. Do not put generic state here.",
+  "campaign_specific": {}
+}

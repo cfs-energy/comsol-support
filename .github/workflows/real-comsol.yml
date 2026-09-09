@@ -1,0 +1,71 @@
+# Real-COMSOL verification — runs ONLY on a self-hosted runner that has
+# COMSOL 6.4 and a license seat. Inert until such a runner is registered
+# with the labels below (no schedule: a scheduled job with no matching
+# runner would queue forever). Trigger by hand from the Actions tab once
+# the runner exists; add a `schedule:` (nightly) after that.
+#
+# Registering the runner (repo admin, on the COMSOL box):
+#   Settings -> Actions -> Runners -> New self-hosted runner, then
+#   `./config.sh --labels self-hosted,comsol` and run it as a service.
+#   The runner user needs COMSOL_PATH (or a probed root), a license,
+#   uv on PATH, and optionally COMSOL_DB / COMSOL_REFERENCE_MPH exported in
+#   its environment. Seat discipline: `concurrency` below serialises
+#   runs so at most one JVM holds a seat at a time.
+
+name: real-comsol
+
+on:
+  workflow_dispatch:
+    inputs:
+      gated:
+        description: "Also run the license-gated real_comsol suite (holds a seat ~3 min)"
+        type: boolean
+        default: true
+
+concurrency:
+  group: comsol-license-seat
+  cancel-in-progress: false
+
+jobs:
+  real-comsol:
+    runs-on: [self-hosted, comsol]
+    timeout-minutes: 90
+    env:
+      COMSOL_E2E: "1"
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install
+        run: uv sync
+      - name: Doctor (blocking problems fail the job; optional-feature warnings do not)
+        # Not --strict: a runner installed with --no-corpus legitimately has
+        # `fragments 0` / `slot_expected_units 0` warnings, which --strict
+        # turns into exit 1.
+        run: uv run comsol-support doctor
+      - name: License seat available?
+        run: uv run comsol-support license-status --timeout 120
+      - name: Default sweep with COMSOL (incl. compile-every-Java-source self-test)
+        run: uv run pytest -q -rs
+      - name: Gated real-COMSOL suite
+        if: ${{ inputs.gated }}
+        run: uv run pytest -q -rs -m real_comsol
+      - name: Smoke - mphgen -> edit-mph --mesh -> MeshStatsProbe -> check
+        run: |
+          set -euo pipefail
+          W="$(mktemp -d)"
+          uv run comsol-support mphgen --builder tests/fixtures/mphgen/SimpleBoxBuilder.java --output "$W/box.mph" >/dev/null
+          cat > "$W/AddMesh.java" <<'EOF'
+          import com.comsol.model.*;
+          import java.util.Map;
+          public class AddMesh {
+              public static Model mutate(Model m, Map<String,String> args) {
+                  m.component("comp1").mesh().create("mesh1", "geom1");
+                  m.component("comp1").mesh("mesh1").create("ftet1", "FreeTet");
+                  m.component("comp1").mesh("mesh1").feature("size").set("hauto", 5);
+                  return m;
+              }
+          }
+          EOF
+          uv run comsol-support edit-mph --input "$W/box.mph" --output "$W/box_meshed.mph" --mutator "$W/AddMesh.java" --mesh mesh1 | grep -q '"mesh_success": true'
+          uv run comsol-support query-mph --input "$W/box_meshed.mph" --query MeshStatsProbe | grep -q '"min_quality"'
+          uv run comsol-support check "$W/box_meshed.mph"
+          rm -rf "$W"

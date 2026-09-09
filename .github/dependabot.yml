@@ -1,0 +1,10 @@
+# Keep the GitHub Actions used by CI current (the org allow-list is
+# version-specific: astral-sh/setup-uv@v3 was rejected, v4-v7 pass).
+# The package itself has no runtime dependencies; the only Python
+# dependency is pytest in the dev group, so no pip updates are scheduled.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

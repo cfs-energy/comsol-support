@@ -1,0 +1,34 @@
+Stationary
+Fixture feature: a stationary solver (synthetic description).
+
+SYNTAX
+model.sol(<tag>).create(<ftag>,"Stationary");
+
+DESCRIPTION
+TABLE 6-10: VALID PROPERTY/VALUE PAIRS FOR STATIONARY.
+
+PROPERTY                     VALUES                            DEFAULT          DESCRIPTION
+
+damp                         auto | on | off                   auto             Fixture text for Stationary.damp.
+maxiter                      positive integer                  25               Fixture text for Stationary.maxiter.
+minstep                      positive double                   1.0E-6           Fixture text for Stationary.minstep.
+ntol                         positive double                   0.001            Fixture text for Stationary.ntol.
+reltol                       positive double                   1e-6             Fixture text for Stationary.reltol.
+segterm                      iter | tol | itertol              itertol          Fixture text for Stationary.segterm.
+
+
+Eigenvalue
+Fixture feature: an eigenvalue solver (synthetic description).
+
+SYNTAX
+model.sol(<tag>).create(<ftag>,"Eigenvalue");
+
+DESCRIPTION
+TABLE 6-12: VALID PROPERTY/VALUE PAIRS FOR EIGENVALUE.
+
+PROPERTY                     VALUES                            DEFAULT          DESCRIPTION
+
+neigs                        positive integer                  6                Fixture text for Eigenvalue.neigs.
+shift                        double                            0                Fixture text for Eigenvalue.shift.
+shiftactive                  on | off                          off              Fixture text for Eigenvalue.shiftactive.
+eigref                       double                            0                Fixture text for Eigenvalue.eigref.

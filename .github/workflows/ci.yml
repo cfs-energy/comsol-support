@@ -1,0 +1,91 @@
+# CI for comsol-support.
+#
+# What hosted runners CAN check: the pure-Python suite on Linux, macOS
+# and Windows, the Java sources that compile without COMSOL
+# (SolverHeartbeat, SolverTelemetry, TagRegistry, SelectionAlgebra),
+# the full ruff `F` rule set, that no COMSOL-derived data or copied
+# documentation prose is tracked, and that a wheel install fails loudly
+# instead of confusingly.
+#
+# What they CANNOT check: anything that needs a COMSOL 6.4 install or a
+# license seat. Those tests skip here (`COMSOL not installed`) and are
+# marked `real_comsol`. `.github/workflows/real-comsol.yml` runs them on
+# a self-hosted runner once one is registered; until then run them by
+# hand before a release: `COMSOL_E2E=1 uv run pytest -m real_comsol`
+# (INSTALL.md). The compile-every-Java-source-against-the-COMSOL-
+# classpath self-test (tests/test_lint_selftest.py) is in that category.
+#
+# Action versions: the org allow-list is version-specific
+# (astral-sh/setup-uv@v3 was rejected; v4-v7 pass) — Dependabot keeps
+# them current (.github/dependabot.yml).
+
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: pytest (no COMSOL) - ${{ matrix.os }} / py${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python: ["3.12"]
+        include:
+          # requires-python = ">=3.10": prove the floor and the ceiling on Linux.
+          - { os: ubuntu-latest, python: "3.10" }
+          - { os: ubuntu-latest, python: "3.11" }
+          - { os: ubuntu-latest, python: "3.13" }
+    env:
+      # Make "COMSOL absent" explicit rather than relying on the probe
+      # roots not existing on the runner.
+      # (job-level env may reference `matrix`, not `runner`)
+      COMSOL_PATH: ${{ startsWith(matrix.os, 'windows') && 'C:\nonexistent\comsol' || '/nonexistent/comsol' }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7   # org allow-list permits v4-v7
+        with:
+          enable-cache: true
+          python-version: ${{ matrix.python }}
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"   # what COMSOL 6.4 ships; standalone Java tests compile with it
+      - name: Install
+        run: uv sync --python ${{ matrix.python }}
+      - name: Test
+        run: uv run pytest -q -rs
+      - name: Doctor (must not crash without COMSOL)
+        shell: bash
+        run: uv run comsol-support doctor || true
+
+  lint:
+    name: ruff F + provenance guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+      - name: Lint (full pyflakes rule set)
+        run: uvx ruff check --select F comsol_support tests scripts
+      - name: No derived data / copied doc prose / site strings tracked
+        run: bash scripts/check_no_derived_data.sh
+
+  wheel-smoke:
+    name: installed wheel fails explicitly
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+      - name: Build wheel, install into a clean venv, assert explicit failure
+        run: bash scripts/wheel_smoke.sh

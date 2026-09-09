@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "comsol-support"
+version = "1.0.0"
+description = "COMSOL model-code generation, execution, and linting tools for COMSOL Multiphysics 6.4 (source-checkout install only)"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
+]
+# No external dependencies — stdlib only (sqlite3, subprocess, json, pathlib, signal, argparse)
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
+# PEP 735 dependency group: `uv sync` installs the dev group by default,
+# so a fresh clone gets pytest without remembering `--extra dev`. The
+# optional-dependencies extra above is kept for pip users
+# (`pip install -e .[dev]`).
+[dependency-groups]
+dev = ["pytest>=7.0"]
+
+[project.scripts]
+comsol-support = "comsol_support.cli:main"
+# Pre-1.0 command name, kept as an alias so existing scripts and campaign
+# workspaces keep working. Prefer `comsol-support`.
+comsol-agent = "comsol_support.cli:main"
+
+# Source-checkout project: the package needs comsol_support/java/**/*.java
+# and docs/known-gotchas.md at run time, which a wheel does not carry.
+# `uv build` still produces a wheel (CI's scripts/wheel_smoke.sh asserts
+# that installing it fails explicitly) — do not publish one.
+[tool.setuptools.packages.find]
+include = ["comsol_support*", "comsol_agent"]   # comsol_agent = import-name compatibility shim
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Real-COMSOL tests spawn JVMs and hold license seats — they must be an
+# explicit opt-in (`uv run pytest -m real_comsol`), never part of the
+# default sweep. Without this, a bare `pytest -q` parks on a license
+# checkout mid-suite.
+addopts = "-m 'not real_comsol'"

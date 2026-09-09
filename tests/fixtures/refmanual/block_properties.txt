@@ -1,0 +1,28 @@
+Block
+Fixture feature: an axis-aligned box (synthetic description).
+
+SYNTAX
+model.component(<ctag>).geom(<tag>).create(<ftag>,"Block");
+model.component(<ctag>).geom(<tag>).feature(<ftag>).set(property,<value>);
+
+DESCRIPTION
+Use model.component(<ctag>).geom(<tag>).create(<ftag>,"Block") to create a block.
+TABLE 3-31: VALID PROPERTY/VALUE PAIRS.
+
+PROPERTY                 VALUE                   DEFAULT     DESCRIPTION
+
+axis                     double[]                {0,0,1}     Fixture text for Block.axis, wrapped onto a
+                                                             second line and a third line so the parser
+                                                             has to join continuations.
+axistype                 x|y|z|                  z           Fixture text for Block.axistype with a wrapped
+                         cartesian |                         value column.
+                         spherical
+base                     corner | center         corner      Fixture text for Block.base, also wrapped
+                                                             onto a second line.
+size                     double[]                {1,1,1}     Edge lengths.
+pos                      double[]                {0,0,0}     Fixture text for Block.pos.
+rot                      double                  0           Fixture text for Block.rot.
+type                     solid | surface         solid       Fixture text for Block.type.
+
+EXAMPLE
+The following commands create a block.

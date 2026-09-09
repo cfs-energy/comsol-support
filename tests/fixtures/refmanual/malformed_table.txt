@@ -1,0 +1,24 @@
+SomeFeature
+A feature with malformed tables.
+
+DESCRIPTION
+TABLE 9-99: VALID PROPERTIES.
+
+PROPERTY                 VALUE                   DEFAULT     DESCRIPTION
+
+goodprop                 double                  1.0         A normal property row.
+    this line is continuation text that wraps around
+    and should be ignored as a property.
+
+                         this is a weird orphan column with no property name.
+
+anothergood              String                  ""          Another valid property.
+
+TABLE HEADER THAT IS NOT A REAL TABLE
+This text should not be parsed as a table.
+
+TABLE 9-100: MORE PROPERTIES FOR SOMEFEATURE.
+
+PROPERTY                 VALUE                   DEFAULT     DESCRIPTION
+
+finalprop                on | off                on          A final property.

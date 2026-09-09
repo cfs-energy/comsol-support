@@ -1,0 +1,59 @@
+Cylinder
+Fixture feature: a cylinder (synthetic description).
+
+SYNTAX
+model.component(<ctag>).geom(<tag>).create(<ftag>,"Cylinder");
+
+DESCRIPTION
+TABLE 3-40: VALID PROPERTY/VALUE PAIRS FOR CYLINDER.
+
+PROPERTY                 VALUE                   DEFAULT     DESCRIPTION
+
+r                        double                  1           Fixture text for Cylinder.r.
+h                        double                  1           Fixture text for Cylinder.h.
+pos                      double[]                {0,0,0}     Fixture text for Cylinder.pos.
+axis                     double[]                {0,0,1}     Fixture text for Cylinder.axis.
+ang                      double                  360         Fixture text for Cylinder.ang.
+type                     solid | surface         solid       Fixture text for Cylinder.type.
+
+EXAMPLE
+The following commands create a cylinder.
+
+
+                                                                                   FIXTURE SECTION HEADER     |   301
+
+Sphere
+Fixture feature: a sphere (synthetic description).
+
+SYNTAX
+model.component(<ctag>).geom(<tag>).create(<ftag>,"Sphere");
+
+DESCRIPTION
+TABLE 3-42: VALID PROPERTY/VALUE PAIRS FOR SPHERE.
+
+PROPERTY                 VALUE                   DEFAULT     DESCRIPTION
+
+r                        double                  1           Fixture text for Sphere.r.
+pos                      double[]                {0,0,0}     Fixture text for Sphere.pos.
+rot                      double                  0           Fixture text for Sphere.rot.
+type                     solid | surface         solid       Fixture text for Sphere.type.
+
+
+Cone
+Fixture feature: a cone (synthetic description).
+
+SYNTAX
+model.component(<ctag>).geom(<tag>).create(<ftag>,"Cone");
+
+DESCRIPTION
+TABLE 3-44: VALID PROPERTY/VALUE PAIRS FOR CONE.
+
+PROPERTY                 VALUE                   DEFAULT     DESCRIPTION
+
+r                        double                  1           Fixture text for Cone.r.
+h                        double                  2           Fixture text for Cone.h.
+ang                      double                  360         Fixture text for Cone.ang.
+rattop                   double                  0           Fixture text for Cone.rattop.
+pos                      double[]                {0,0,0}     Fixture text for Cone.pos.
+specifytop               none | radius |         none        Fixture text for Cone.specifytop with a
+                         width                               wrapped value column.
